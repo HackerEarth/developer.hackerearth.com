@@ -1,46 +1,185 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>developer.hackerearth.com by HackerEarth</title>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="chrome=1">
+        <title>developer.hackerearth.com by HackerEarth</title>
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <h1>developer.hackerearth.com</h1>
-        <p></p>
+        <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <!--[if lt IE 9]>
+        <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+        <div class="container">
+            <div class="masthead">
+                <h3 class="muted pull-left">developer.hackerearth.com</h3>
+                <h3 class="muted pull-right">API v1</h3>
+                <div style="clear:both;"></div>
+                <hr>
+            </div>
+            <h3>The HackerEarth API</h3>
+            <p>This is HackerEarth API resource documentation. If you have any
+            problems or requests please contact the <a
+                href="mailto:vivek@hackerearth.com"
+                target="_blank">maintainer</a>.</p>
+            <br>
+            <p>The API provides endpoints for compiling and running code in
+            several languages. It can be accessed via a simple API key based
+            authorization process. You need to register your web application in
+            order to get a client specific client_secret which must be provided
+            while communicating with the API. Currently, there is a cap on the
+            number of clients a user can register and also on the number of
+            free requests a user can make. The API receives all the data via
+            POST and returns the data as JSON.</p>
+            <br>
+            <p>The API defines the following endpoints:</p>
+<pre>
+http://api.hackerearth.com/code/compile/
+http://api.hackerearth.com/code/run/
+</pre>
+            <br>
+            <p>Every JSON object returned by the API always consists of atleast
+            two attributes, 'message' and 'errors'. 'message' contains the
+            description of errors encountered while processing of a request and
+            'errors' may contain key-value pairs which were the cause of the
+            errors.</p>
+<pre>
+{"message": "ArgumentMissingError: client_secret is needed!", "errors": {}}
+</pre>
+            <br>
+            <p>In case of a successful compile request, the JSON object
+            returned looks like:</p>
+<pre>
+{"message": "OK", "errors": {}, "compile_status": "OK"}
+</pre>
+            <br>
+            <p>In case of a successful run request:</p>
+<pre>
+{"errors": {}, 
+"id": "7e5cfbe", 
+"message": "OK", 
+"run_status": {"status": "AC", 
+             "memory_used": "64", 
+             "output_html": "Hello",
+             "time_used": "0.1005", 
+             "signal": "OTHER", 
+             "status_detail": "N/A", 
+             "output": "Hello"}, 
+"compile_status": "Compiled successfully.", 
+"web_link": "http://code.hackerearth.com/7e5cfbe"}
+</pre>
+            <br>
+            <p>Each endpoint needs atleast three necessary parameters viz
+            client_secret, source and lang.</p>
+            <h4>client_secret</h4>
+            <p>client_secret is a 40 character random key that serves as an
+            identification for a particular client and must be provided when
+            communicating with the API. You can create a client_secret on the API
+            registration page. Failing to provide a client_secret returns the
+            following 400 Bad Request response.</p>
+<pre>
+>> curl -i http://api.hackerearth.com/code/compile/
+>>
+HTTP/1.1 400 BAD REQUEST
+Date: Wed, 23 Jan 2013 22:56:25 GMT
+Server: Apache/2.2.22 (Ubuntu)
+Connection: close
+Transfer-Encoding: chunked
+Content-Type: application/json
 
-        <p class="view"><a href="https://github.com/HackerEarth/developer.hackerearth.com">View the Project on GitHub <small>HackerEarth/developer.hackerearth.com</small></a></p>
+{"message": "ArgumentMissingError: client_secret is needed!", "errors": {}} 
+</pre>
+            <br>
+            <p>Providing an invalid client_secret returns the following 400 Bad
+            Request response. The invalid client_secret is also returned in
+            'errors' attribute of the JSON response object.<p>
+<pre>
+>> curl -i --data "client_secret=adsafwqf5dcb5757e72c96d9" http://api.hackerearth.com/code/compile/
+>>
+HTTP/1.1 400 BAD REQUEST
+Date: Wed, 23 Jan 2013 23:00:20 GMT
+Server: Apache/2.2.22 (Ubuntu)
+Connection: close
+Transfer-Encoding: chunked
+Content-Type: application/json
 
+{"message": "UnregisteredClientError: Client does not exist", "errors": {"client_secret": "adsafwqf5dcb5757e72c96d969a1a"}}
+</pre>
+            <br>
+            <h4>source</h4>
+            <p>source is the actual text or the source code that you want to
+            compile or run. Failing to provide the source parameter returns 400
+            response.</p>
+<pre>
+>> curl -i --data "client_secret=5db3f1c12c59caa1002d1cb5" http://api.hackerearth.com/code/compile/
+>>
+HTTP/1.1 400 BAD REQUEST
+Date: Thu, 24 Jan 2013 16:38:09 GMT
+Server: Apache/2.2.22 (Ubuntu)
+Connection: close
+Transfer-Encoding: chunked
+Content-Type: application/json
 
-        <ul>
-          <li><a href="https://github.com/HackerEarth/developer.hackerearth.com/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/HackerEarth/developer.hackerearth.com/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/HackerEarth/developer.hackerearth.com">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h1>developer.hackerearth.com</h1>
+{"message": "ArgumentMissingError: source is needed!", "errors": {}}
+</pre>
+            <br>
+            <h4>lang</h4>
+            <p>lang is a string representing the programming language in which the
+            source is written. lang is a required parameter and a similar response
+            as that of source is returned by the API if lang is missing in the POST
+            requests.</p>
+            <br>
+            <h4>input</h4>
+            <p>input is an optional parameter which represents the input that is
+            intended to be fed to your program.</p>
+            <br>
+            <p>Below is a sample python script that makes valid requests to CodeTable
+            API.</p>
+<pre>
+import urllib
 
-<p>This is HackerEarth API resource documentation.</p>
+COMPILE_URL = 'http://api.hackerearth.com/code/compile/'
+RUN_URL = 'http://api.hackerearth.com/code/run/'
 
-<p>All submissions are welcome. To submit a change, fork this repo, commit your
-changes, and send us a pull request.</p>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/HackerEarth">HackerEarth</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
-    </div>
-    <script src="javascripts/scale.fix.js"></script>
-    
-  </body>
+CLIENT_SECRET = '5db3f1c12c59caa1002d1cb5757e72c96d969a1a'
+
+source = open('sample.c').read()
+lang = 'C'
+
+post_data = {
+    'client_secret': CLIENT_SECRET,
+    'source': source,
+    'lang': lang,
+}
+
+post_data = urllib.urlencode(post_data)
+
+response = urllib.urlopen(RUN_URL, post_data)
+print "post_data: ",post_data
+print
+print response.read()
+</pre>
+            <br>
+            <p>Output from the above script is:</p>
+<pre>
+post_data: lang=C&client_secret=5db3f1c12c59caa1002d1cb5757e72c96d969a1a&source=
+%23include%3Cstdio.h%3E%0A%0Aint+main%28%29%7B%0A%0A++printf%28%22Hello%22%29%3B%0A++%7D%0A
+
+{"errors": {}, "id": "7e5cfbe", "message": "OK", "run_status": 
+{"status": "AC", "memory_used": "64", "output_html": "Hello", "time_used": "0.1005", "signal": 
+"OTHER", "status_detail": "N/A", "output": "Hello"}, "compile_status": "Compiled successfully.", 
+"web_link": "http://code.hackerearth.com/7e5cfbe"}
+</pre>
+            <br>
+            <p>All submissions are welcome. To submit a change, fork this repo, commit your
+            changes, and send us a pull request.</p>
+            <hr> 
+            <div class="footer">
+            <p>This project is maintained by <a
+                href="https://github.com/HackerEarth">HackerEarth</a>.</p>
+            </div>
+        </div>
+    </body>
 </html>
