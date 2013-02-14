@@ -27,12 +27,16 @@
             <br>
             <p>The API provides endpoints for compiling and running code in
             several languages. It can be accessed via a simple API key based
-            authorization process. You need to register your web application in
+            authorization process. You need to <a
+                href="http://code.hackerearth.com/api/register/"
+                target="_blank">register your web application</a> in
             order to get a client specific client_secret which must be provided
             while communicating with the API. Currently, there is a cap on the
             number of clients a user can register and also on the number of
             free requests a user can make. The API receives all the data via
-            POST and returns the data as JSON.</p>
+            POST and returns the data as JSON. You can register your own client
+            <a href="http://code.hackerearth.com/api/register/"
+                target="_blank">here</a>.</p>
             <br>
             <p>The API defines the following endpoints:</p>
 <pre>
@@ -55,7 +59,8 @@ http://api.hackerearth.com/code/run/
 {"message": "OK", "errors": {}, "compile_status": "OK"}
 </pre>
             <br>
-            <p>In case of a successful run request:</p>
+            <p>In case of a successful run request, the JSON object returned
+            might look like:</p>
 <pre>
 {"errors": {}, 
 "id": "7e5cfbe", 
@@ -67,7 +72,7 @@ http://api.hackerearth.com/code/run/
              "signal": "OTHER", 
              "status_detail": "N/A", 
              "output": "Hello"}, 
-"compile_status": "Compiled successfully.", 
+"compile_status": "OK", 
 "web_link": "http://code.hackerearth.com/7e5cfbe"}
 </pre>
             <br>
@@ -135,8 +140,8 @@ Content-Type: application/json
             <p>input is an optional parameter which represents the input that is
             intended to be fed to your program.</p>
             <br>
-            <p>Below is a sample python script that makes valid requests to CodeTable
-            API.</p>
+            <p>Below is a sample python script that makes valid requests to
+            HackerEarth API.</p>
 <pre>
 import urllib
 
@@ -169,16 +174,20 @@ post_data: lang=C&client_secret=5db3f1c12c59caa1002d1cb5757e72c96d969a1a&source=
 
 {"errors": {}, "id": "7e5cfbe", "message": "OK", "run_status": 
 {"status": "AC", "memory_used": "64", "output_html": "Hello", "time_used": "0.1005", "signal": 
-"OTHER", "status_detail": "N/A", "output": "Hello"}, "compile_status": "Compiled successfully.", 
+"OTHER", "status_detail": "N/A", "output": "Hello"}, "compile_status": "OK", 
 "web_link": "http://code.hackerearth.com/7e5cfbe"}
 </pre>
             <br>
-            <p>All submissions are welcome. To submit a change, fork this repo, commit your
+            <p>All submissions are welcome. To submit a change, fork this <a
+                href="https://github.com/HackerEarth/developer.hackerearth.com"
+                target="_blank">repo</a>, commit your
             changes, and send us a pull request.</p>
             <hr> 
             <div class="footer">
             <p>This project is maintained by <a
-                href="https://github.com/HackerEarth">HackerEarth</a>.</p>
+                href="https://github.com/HackerEarth">HackerEarth</a>. For any
+            queries, <a href="mailto:vivek@hackerearth.com"
+                target="_blank">contact me</a>.</p>
             </div>
         </div>
     </body>
