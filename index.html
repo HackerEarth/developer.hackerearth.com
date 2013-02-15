@@ -69,7 +69,11 @@ http://api.hackerearth.com/code/run/
             <p>In case of a successful compile request, the JSON object
             returned looks like:</p>
 <pre>
-{"message": "OK", "errors": {}, "compile_status": "OK"}
+{"errors": {}, 
+"id": "7e5cfbe", 
+"message": "OK", 
+"compile_status": "OK",
+"web_link": "http://code.hackerearth.com/7e5cfbe"}
 </pre>
             <br>
             <p>In case of a successful run request, the JSON object returned
@@ -78,14 +82,16 @@ http://api.hackerearth.com/code/run/
 {"errors": {}, 
 "id": "7e5cfbe", 
 "message": "OK", 
-"run_status": {"status": "AC", 
-             "memory_used": "64", 
-             "output_html": "Hello",
-             "time_used": "0.1005", 
-             "signal": "OTHER", 
-             "status_detail": "N/A", 
-             "output": "Hello"}, 
-"compile_status": "OK", 
+"compile_status": "OK",
+"run_status": {"status": "AC",
+              "time_used": "0.1005",
+              "memory_used": "64",
+              "output": "Hello", 
+              "output_html": "Hello",
+              "signal": "OTHER",
+              "status_detail": "N/A",
+              "time_limit": 5,
+              "memory_limit": 262144}
 "web_link": "http://code.hackerearth.com/7e5cfbe"}
 </pre>
             <br>
@@ -147,14 +153,34 @@ Content-Type: application/json
             <p>lang is a string representing the programming language in which the
             source is written. lang is a required parameter and a similar response
             as that of source is returned by the API if lang is missing in the POST
-            requests.</p>
+            requests.
+            <br>
+            Possible values of lang argument are C, CPP, CPP11, CLOJURE, JAVA,
+            JAVASCRIPT, HASKELL, PERL, PHP, PYTHON, RUBY.
+            </p>
             <br>
             <h4>input</h4>
-            <p>input is an optional parameter which represents the input that is
-            intended to be fed to your program.</p>
+            <p>input is an optional parameter which represents the input to be
+            fed to your program.</p>
             <br>
-            <p>Below is a sample python script that makes valid requests to
-            HackerEarth API.</p>
+            <h4>time_limit</h4>
+            <p>time_limit is an optional parameter which is the max time for
+            which program is allowed to run. Maximum value of time limit can be
+            5 seconds. Any value greater than 5 in the API request is set to 5.
+            Exceeding the time limit returns the status as <i>TLE</i> in the
+            response.</p>
+            <br>
+            <h4>memory_limit</h4>
+            <p> memory_limit is an optional paramer which is the max memory
+            allowed to be used by the program. Maximum value of memory limit
+            can be 262144 (256 MB). Any value greater than 262144 in the API
+            request is set to
+            262144. Exceeding the memory limit returns the status as <i>MLE</i>
+            in the response.<p>
+            <br>
+            <p>Below is a sample python script which makes valid requests to
+            the HackerEarth API.</p>
+            <br>
 <pre>
 import urllib
 
@@ -170,6 +196,8 @@ post_data = {
     'client_secret': CLIENT_SECRET,
     'source': source,
     'lang': lang,
+    'time_limit': 5,
+    'memory_limit': 262144,
 }
 
 post_data = urllib.urlencode(post_data)
@@ -186,8 +214,8 @@ post_data: lang=C&client_secret=5db3f1c12c59caa1002d1cb5757e72c96d969a1a&source=
 %23include%3Cstdio.h%3E%0A%0Aint+main%28%29%7B%0A%0A++printf%28%22Hello%22%29%3B%0A++%7D%0A
 
 {"errors": {}, "id": "7e5cfbe", "message": "OK", "run_status": 
-{"status": "AC", "memory_used": "64", "output_html": "Hello", "time_used": "0.1005", "signal": 
-"OTHER", "status_detail": "N/A", "output": "Hello"}, "compile_status": "OK", 
+{"status": "AC", "memory_used": "64", "output_html": "Hello", "time_used": "0.1005", "signal":  OTHER",
+"status_detail": "N/A", "output": "Hello", "time_limit": 5, "memory_limit": 262144}, "compile_status": "OK", 
 "web_link": "http://code.hackerearth.com/7e5cfbe"}
 </pre>
             <br>
