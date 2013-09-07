@@ -28,7 +28,7 @@
         <div class="container">
             <div class="masthead">
                 <h3 class="muted pull-left">developer.hackerearth.com</h3>
-                <h3 class="muted pull-right">API v1</h3>
+                <h3 class="muted pull-right">API v2</h3>
                 <div style="clear:both;"></div>
                 <hr>
             </div>
@@ -71,6 +71,7 @@ http://api.hackerearth.com/code/run/
 <pre>
 {"errors": {}, 
 "id": "7e5cfbe", 
+"code_id": "7e5cfbe", 
 "message": "OK", 
 "compile_status": "OK",
 "web_link": "http://code.hackerearth.com/7e5cfbe"}
@@ -81,6 +82,7 @@ http://api.hackerearth.com/code/run/
 <pre>
 {"errors": {}, 
 "id": "7e5cfbe", 
+"code_id": "7e5cfbe", 
 "message": "OK", 
 "compile_status": "OK",
 "run_status": {"status": "AC",
@@ -155,8 +157,10 @@ Content-Type: application/json
             as that of source is returned by the API if lang is missing in the POST
             requests.
             <br>
-            Possible values of lang argument are C, CPP, CPP11, CLOJURE, JAVA,
-            JAVASCRIPT, HASKELL, PERL, PHP, PYTHON, RUBY.
+            Possible values of lang argument are C, CPP, CPP11, CLOJURE, CSHARP, JAVA,
+            JAVASCRIPT, HASKELL, PERL, PHP, PYTHON, RUBY. The corresponding langauges are
+            C, C++, C++11, Clojure, C#, Java, JavaScript, Haskell, Perl, PHP, Python and
+            Ruby.
             </p>
             <br>
             <h4>input</h4>
@@ -178,9 +182,19 @@ Content-Type: application/json
             262144. Exceeding the memory limit returns the status as <i>MLE</i>
             in the response.<p>
             <br>
+            <h4>async</h4>
+            <p>async is an optional parameter which is the API request mode
+            used by the program. The value 1 turns it on. You should use async
+            mode while writing applications so that you can avoid processes from
+            hanging for response and reduce memory overhead and timeout.
+            <br>
+
             <p>Below is a sample python script which makes valid requests to
             the HackerEarth API.</p>
             <br>
+
+            <h4>Synchronous API request</h4>
+
 <pre>
 import urllib
 
@@ -194,6 +208,7 @@ lang = 'C'
 
 post_data = {
     'client_secret': CLIENT_SECRET,
+    'async': 0,
     'source': source,
     'lang': lang,
     'time_limit': 5,
@@ -213,13 +228,98 @@ print response.read()
 post_data: lang=C&client_secret=5db3f1c12c59caa1002d1cb5757e72c96d969a1a&source=
 %23include%3Cstdio.h%3E%0A%0Aint+main%28%29%7B%0A%0A++printf%28%22Hello%22%29%3B%0A++%7D%0A
 
-{"errors": {}, "id": "7e5cfbe", "message": "OK", "run_status": 
+{"errors": {}, "id": "7e5cfbe", "code_id": "7e5cfbe", "message": "OK", "run_status": 
 {"status": "AC", "memory_used": "64", "output_html": "Hello", "time_used": "0.1005", "signal":  OTHER",
 "status_detail": "N/A", "output": "Hello", "time_limit": 5, "memory_limit": 262144}, "compile_status": "OK", 
 "web_link": "http://code.hackerearth.com/7e5cfbe"}
 </pre>
             <br>
-            <p>All submissions are welcome. To submit a change, fork this <a
+            <h4>Asynchronous API request</h4>
+
+<pre>
+import urllib
+
+COMPILE_URL = 'http://api.hackerearth.com/code/compile/'
+RUN_URL = 'http://api.hackerearth.com/code/run/'
+
+CLIENT_SECRET = '5db3f1c12c59caa1002d1cb5757e72c96d969a1a'
+
+source = open('sample.c').read()
+lang = 'C'
+
+post_data = {
+    'client_secret': CLIENT_SECRET,
+    
+    # Asynchronous mode on
+    'async': 1,
+
+    'source': source,
+    'lang': lang,
+    'time_limit': 5,
+    'memory_limit': 262144,
+
+    # Id to keep track of request
+    'id': 123,
+
+    # Callback URL where processed response will later arrive
+    # - this response is same as the response received in
+    # synchronous API request.
+    'callback': 'http://example.com/receive-hackerearth-response/'
+}
+
+post_data = urllib.urlencode(post_data)
+
+response = urllib.urlopen(RUN_URL, post_data)
+print "post_data: ",post_data
+print
+print response.read()
+</pre>
+            <br>
+            <p>Output from the above script is:</p>
+<pre>
+post_data:  lang=C&source=%23include+%3Cstdio.h%3E%0A%0Aint+main%28%29+%7B%0A++++printf%28%22Hello%22%29%3B%0A++++int+n%3B%0A++++scanf%28%22%25d%22%2C+%26n%29%3B%0A++++printf%28%22%5Cn%25d%5Cn%22%2C+n%29%3B%0A++++return+0%3B%0A%7D%0A&callback=http%3A%2F%2Fexample.com%2Freceive-hackerearth-response%2F&async=1&time_limit=5&client_secret=4df77c2c2eb62f9adb20bd1127f6f44a4ce6cda4&id=123&memory_limit=262144
+
+{"errors": {}, "code_id": "3d255bX", "id": 123, "message": "OK", "run_status": {"status": "NA", "time_limit": 5, "async": 1, "memory_limit": 262144}, "compile_status": "Compiling...", "web_link": "http://code.hackerearth.com/3d255bX"}
+</pre>
+
+<br>
+The response recieved at the callback url is in JSON format. You can process it as given in the example code below.
+<br>
+<br>
+<pre>
+import json
+
+def api_response(request):
+    payload = request.POST.get('payload', '') 
+    
+    """
+    This payload is in JSON format. You need to load it using
+    native method to convert it into dictionary for easy operations
+    later on.
+    """
+    payload = json.loads(payload)
+    print payload
+
+    """
+    Payload Format:
+    {u'errors': {}, u'code_id': u'4c384aM', u'web_link': u'http://code.hackerearth.com/4c384aM', u'compile_status': u'OK', u'id': u'123456', u'async': 1, u'run_status': {u'status': u'AC', u'memory_used': u'64', u'output_html': u'Hello<br>1<br>', u'time_used': u'0.1006', u'signal': u'OTHER', u'status_detail': u'N/A', u'output': u'Hello\\n1\\n'}, u'message': u'OK'}
+    """
+
+    run_status = payload.get('run_status')
+    o = run_status['output']
+    print o
+
+    """
+    Output:
+    Hello
+    1
+    """
+    return HttpResponse('API Response Recieved!')
+</pre>
+
+            <br>
+            <p>All submissions are welcome. Sample code for API request in different languages
+            are welcome. To submit a change, fork this <a
                 href="https://github.com/HackerEarth/developer.hackerearth.com"
                 target="_blank">repo</a>, commit your
             changes, and send us a pull request.</p>
