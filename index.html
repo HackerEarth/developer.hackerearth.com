@@ -193,47 +193,101 @@ Content-Type: application/json
             the HackerEarth API.</p>
             <br>
 
-            <h4>Synchronous API request</h4>
+            <h4>Synchronous API request from raw string</h4>
 
 <pre>
-import urllib
+#! -*- coding: utf-8 -*-
 
-COMPILE_URL = 'http://api.hackerearth.com/code/compile/'
-RUN_URL = 'http://api.hackerearth.com/code/run/'
+import requests
 
+# constants
+RUN_URL = u'http://api.hackerearth.com/code/run/'
 CLIENT_SECRET = '5db3f1c12c59caa1002d1cb5757e72c96d969a1a'
 
-source = open('sample.c').read()
-lang = 'C'
+source = "import sys;print(sys.path)"
 
-post_data = {
+data = {
     'client_secret': CLIENT_SECRET,
     'async': 0,
     'source': source,
-    'lang': lang,
+    'lang': "PYTHON",
     'time_limit': 5,
     'memory_limit': 262144,
 }
 
-post_data = urllib.urlencode(post_data)
-
-response = urllib.urlopen(RUN_URL, post_data)
-print "post_data: ",post_data
-print
-print response.read()
+r = requests.post(RUN_URL, data=data)
+print r.json()
 </pre>
             <br>
             <p>Output from the above script is:</p>
 <pre>
-post_data: lang=C&client_secret=5db3f1c12c59caa1002d1cb5757e72c96d969a1a&source=
-%23include%3Cstdio.h%3E%0A%0Aint+main%28%29%7B%0A%0A++printf%28%22Hello%22%29%3B%0A++%7D%0A
+post_data: lang=PYTHON&time_limit=5&memory_limit=262144&source=import+sys%3Bprint%28sys.path%29&
+async=0&client_secret=5db3f1c12c59caa1002d1cb5757e72c96d969a1a
 
-{"errors": {}, "id": "7e5cfbe", "code_id": "7e5cfbe", "message": "OK", "run_status": 
-{"status": "AC", "memory_used": "64", "output_html": "Hello", "time_used": "0.1005", "signal":  OTHER",
-"status_detail": "N/A", "output": "Hello", "time_limit": 5, "memory_limit": 262144}, "compile_status": "OK", 
-"web_link": "http://code.hackerearth.com/7e5cfbe"}
+{u'errors': {}, u'code_id': u'26c372Q', u'web_link': u'http://code.hackerearth.com/26c372Q', u'compile_status': u'OK',
+u'message': u'OK', u'run_status': {u'status': u'AC', u'time_limit': 5,
+u'output_html': u"['/tmp',&nbsp;'/usr/lib/python2.7',&nbsp;'/usr/lib/python2.7/plat-linux2',&nbsp;
+    '/usr/lib/python2.7/lib-tk',&nbsp;'/usr/lib/python2.7/lib-old',&nbsp;'/usr/lib/python2.7/lib-dynload',&nbsp;
+    '/usr/local/lib/python2.7/dist-packages',&nbsp;'/usr/lib/python2.7/dist-packages',&nbsp;
+    '/usr/lib/pymodules/python2.7']<br>",
+u'memory_limit': 262144, u'time_used': u'0.1005', u'signal': u'OTHER', u'status_detail': u'N/A', u'async': 0, 
+u'output': u"['/tmp', '/usr/lib/python2.7', '/usr/lib/python2.7/plat-linux2', '/usr/lib/python2.7/lib-tk', 
+    '/usr/lib/python2.7/lib-old', '/usr/lib/python2.7/lib-dynload', '/usr/local/lib/python2.7/dist-packages', 
+    '/usr/lib/python2.7/dist-packages', '/usr/lib/pymodules/python2.7']\n", u'memory_used': u'64'}}
+    
 </pre>
             <br>
+            <h4>Synchronous API request from file</h4>
+
+<pre>
+#! -*- coding: utf-8 -*-
+
+import requests
+
+# constants
+RUN_URL = u'http://api.hackerearth.com/code/run/'
+
+CLIENT_SECRET = '5db3f1c12c59caa1002d1cb5757e72c96d969a1a'
+
+source = open('test.py', 'r')
+"""
+test.py
+#! -*- coding: utf-8 -*-
+
+def square(no):
+    return no * no
+
+print(square(-23))
+"""
+
+data = {
+    'client_secret': CLIENT_SECRET,
+    'async': 0,
+    'source': source.read(),
+    'lang': "PYTHON",
+    'time_limit': 5,
+    'memory_limit': 262144,
+}
+
+r = requests.post(RUN_URL, data=data)
+source.close()
+print r.json()
+</pre>
+            <br>
+            <p>Output from the above script is:</p>
+<pre>
+post_data: lang=PYTHON&time_limit=5&memory_limit=262144&
+source=%23%21+-%2A-+coding%3A+utf-8+-%2A-%0A%0Adef+square%28no%29%3A%0A++++return+no+%2A+no%0A%0Aprint%28square%28-23%29%29%0A%0A&
+async=0&client_secret=5db3f1c12c59caa1002d1cb5757e72c96d969a1a
+
+{u'errors': {}, u'code_id': u'c93d09V', u'web_link': u'http://code.hackerearth.com/c93d09V', u'compile_status': u'OK',
+u'message': u'OK', u'run_status': {u'status': u'AC', u'time_limit': 5, u'output_html': u'529<br>', u'memory_limit': 262144,
+u'time_used': u'0.1005', u'signal': u'OTHER', u'status_detail': u'N/A', u'async': 0, u'output': u'529\n',
+u'memory_used': u'64'}}
+
+</pre>
+            <br>
+
             <h4>Asynchronous API request</h4>
 
 <pre>
